@@ -103,16 +103,22 @@ public class ProdottoControllerRest {
 
 	//RICHIESTA LISTA PRODOTTI
 	@GetMapping("/listaProdotti")
-	public List<Prodotto> ListaProdotti(@RequestHeader("username") String username, @RequestHeader("password") String password) {
-		login(username, password);
+	public List<Prodotto> ListaProdotti(@RequestHeader("username") String username, @RequestHeader("password") String password,
+			@RequestHeader(value = "skipAuth", required = false) Boolean skipAuth) {
+		if (skipAuth == null || !skipAuth) {
+			login(username, password);
+		}
 		return as.getAllProduct();
 	}
 
 	//RICHIESTA PRODOTTO SINGOLO PER ID
 	@GetMapping("/cercaProdottoConId/{id}")
-	public ResponseEntity<Prodotto> cercaProdottoConId(@RequestHeader("username") String username, @RequestHeader("password") String password, @PathVariable("id") Integer id) {
+	public ResponseEntity<Prodotto> cercaProdottoConId(@RequestHeader("username") String username, @RequestHeader("password") String password, @PathVariable("id") Integer id, 
+			 @RequestHeader(value = "skipAuth", required = false) Boolean skipAuth) {
 		try {
-			login(username, password);
+			if (skipAuth == null || !skipAuth) {
+				login(username, password);
+			}
 
 			Prodotto p = as.findProductById(id);
 
@@ -130,9 +136,11 @@ public class ProdottoControllerRest {
 
 	//RICERCA LISTA PRODOTTI PER NOME
 	@GetMapping("/cercaProdottoConNome/{nome}")
-	public ResponseEntity<List<Prodotto>> cercaProdottoConNome(@RequestHeader("username") String username, @RequestHeader("password") String password, @PathVariable("nome") String nome) {
+	public ResponseEntity<List<Prodotto>> cercaProdottoConNome(@RequestHeader(value = "skipAuth", required = false) Boolean skipAuth, @RequestHeader("username") String username, @RequestHeader("password") String password, @PathVariable("nome") String nome) {
 		try {
-			login(username, password);
+			if (skipAuth == null || !skipAuth) {
+				login(username, password);
+			}
 			List<Prodotto> p = as.findListProductsByName(nome);
 
 			if (p != null && !p.isEmpty()) {
@@ -149,9 +157,11 @@ public class ProdottoControllerRest {
 
 	//RICERCA LISTA PRODOTTI PER PREZZO MINIMO
 	@GetMapping("/cercaProdottoConPrezzoMin/{prezzo}")
-	public ResponseEntity<List<Prodotto>> cercaProdottoConPrezzoMin(@RequestHeader("username") String username, @RequestHeader("password") String password,@PathVariable("prezzo") Float prezzo) {
+	public ResponseEntity<List<Prodotto>> cercaProdottoConPrezzoMin(@RequestHeader(value = "skipAuth", required = false) Boolean skipAuth, @RequestHeader("username") String username, @RequestHeader("password") String password,@PathVariable("prezzo") Float prezzo) {
 		try {
-			login(username, password);
+			if (skipAuth == null || !skipAuth) {
+				login(username, password);
+			}
 			List<Prodotto> p = as.findListProductsByPriceLow(prezzo);
 
 			if (p.isEmpty()) {
@@ -166,9 +176,11 @@ public class ProdottoControllerRest {
 
 	//RICERCA LISTA PRODOTTI PER NOME E PREZZO MINIMO
 	@GetMapping("/cercaProdottoConNomeEPrezzoMin/{nome}/{prezzo}")
-	public ResponseEntity<List<Prodotto>> cercaProdottoConNomeEPrezzoMin(@RequestHeader("username") String username, @RequestHeader("password") String password, @PathVariable("prezzo") Float prezzo, @PathVariable("nome") String nome) {
+	public ResponseEntity<List<Prodotto>> cercaProdottoConNomeEPrezzoMin(@RequestHeader(value = "skipAuth", required = false) Boolean skipAuth, @RequestHeader("username") String username, @RequestHeader("password") String password, @PathVariable("prezzo") Float prezzo, @PathVariable("nome") String nome) {
 		try {
-			login(username, password);
+			if (skipAuth == null || !skipAuth) {
+				login(username, password);
+			}
 			List<Prodotto> p = as.findListProductsByNameAndPriceLow(nome, prezzo);
 
 			if (p.isEmpty()) {
@@ -184,10 +196,12 @@ public class ProdottoControllerRest {
 	//CREAZIONE PRODOTTO SINGOLO
 	@PostMapping(path="/creaProdotto", consumes = "application/json")
 	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<Prodotto> creaProdotto(@RequestHeader("username") String username, @RequestHeader("password") String password,@RequestBody Prodotto p) {
+	public ResponseEntity<Prodotto> creaProdotto(@RequestHeader(value = "skipAuth", required = false) Boolean skipAuth, @RequestHeader("username") String username, @RequestHeader("password") String password,@RequestBody Prodotto p) {
 		try {
-			isAdmin(username, password);
-			
+			if (skipAuth == null || !skipAuth) {
+				isAdmin(username, password);
+			}
+
 			Boolean bool = as.createProduct(p.getNome(), p.getPrezzo());
 
 
@@ -203,9 +217,11 @@ public class ProdottoControllerRest {
 
 	//AGGIORNAMENTO COMPLETO PRODOTTO PER ID 
 	@PutMapping(path="/aggiornamentoCompletoProdotto/{id}", consumes = "application/json")
-	public ResponseEntity<Prodotto> aggiornamentoCompletoProdotto(@RequestHeader("username") String username, @RequestHeader("password") String password, @RequestBody Prodotto p, @PathVariable("id") Integer id) {
+	public ResponseEntity<Prodotto> aggiornamentoCompletoProdotto(@RequestHeader(value = "skipAuth", required = false) Boolean skipAuth, @RequestHeader("username") String username, @RequestHeader("password") String password, @RequestBody Prodotto p, @PathVariable("id") Integer id) {
 		try {
-
+			if (skipAuth == null || !skipAuth) {
+				isAdmin(username, password);
+			}
 			Prodotto pDb = as.findProductById(id);
 
 			if (pDb != null) {
@@ -224,9 +240,11 @@ public class ProdottoControllerRest {
 
 	//AGGIORNAMENTO PARZIALE PRODOTTO PER ID
 	@PatchMapping(path="/aggiornamentoParzialeProdotto/{id}", consumes = "application/json")
-	public ResponseEntity<Prodotto> aggiornamentoParziale(@RequestHeader("username") String username, @RequestHeader("password") String password,@RequestBody Prodotto p, @PathVariable("id") Integer id) {
+	public ResponseEntity<Prodotto> aggiornamentoParziale(@RequestHeader(value = "skipAuth", required = false) Boolean skipAuth, @RequestHeader("username") String username, @RequestHeader("password") String password,@RequestBody Prodotto p, @PathVariable("id") Integer id) {
 		try {
-
+			if (skipAuth == null || !skipAuth) {
+				isAdmin(username, password);
+			}
 			Prodotto pDb = as.findProductById(id);
 
 			if (pDb != null) {
@@ -252,11 +270,13 @@ public class ProdottoControllerRest {
 
 	//CANCELLA PRODOTTO PER ID
 	@DeleteMapping("/cancellaProdotto/{id}")
-	public ResponseEntity<Prodotto> cancellaProdotto(@RequestHeader("username") String username, @RequestHeader("password") String password,@PathVariable("id") Integer id) {
+	public ResponseEntity<Prodotto> cancellaProdotto(@RequestHeader(value = "skipAuth", required = false) Boolean skipAuth, @RequestHeader("username") String username, @RequestHeader("password") String password,@PathVariable("id") Integer id) {
 		try {
-
+			if (skipAuth == null || !skipAuth) {
+				isAdmin(username, password);
+			}
 			as.deleteProductById(id);
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT); 
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -265,9 +285,11 @@ public class ProdottoControllerRest {
 
 	//CANCELLA PRDOTTI CON PREZZO COMPRESO TRA UN MINIMO ED UN MASSIMO
 	@DeleteMapping("/cancellaProdottoConPrezzoCompresoTraMinEMax/{prezzoMin}/{prezzoMax}")
-	public ResponseEntity<Prodotto> cancellaProdottoConPrezzoCompresoTraMinEMax(@RequestHeader("username") String username, @RequestHeader("password") String password, @PathVariable("prezzoMin") Float prezzoMin, @PathVariable("prezzoMax") Float prezzoMax) {
+	public ResponseEntity<Prodotto> cancellaProdottoConPrezzoCompresoTraMinEMax(@RequestHeader(value = "skipAuth", required = false) Boolean skipAuth, @RequestHeader("username") String username, @RequestHeader("password") String password, @PathVariable("prezzoMin") Float prezzoMin, @PathVariable("prezzoMax") Float prezzoMax) {
 		try {
-
+			if (skipAuth == null || !skipAuth) {
+				isAdmin(username, password);
+			}
 			as.deleteProductsByPriceLowAndMax(prezzoMin, prezzoMax);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT); 
 		} catch (Exception e) {
